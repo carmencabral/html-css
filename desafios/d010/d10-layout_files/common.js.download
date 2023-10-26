@@ -1,0 +1,537 @@
+
+var wt_data_obj = null;
+
+var wt_videosteparr = new Array();
+var wt_currentstepid = null;
+
+function isValidEmailAddress(emailAddress) 
+{
+	var pattern2 = new RegExp(/^((([a-z]|\d|[!#\$%&'\*\+\-\/=\?\^_`{\|}~]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])+(\.([a-z]|\d|[!#\$%&'\*\+\-\/=\?\^_`{\|}~]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])+)*)|((\x22)((((\x20|\x09)*(\x0d\x0a))?(\x20|\x09)+)?(([\x01-\x08\x0b\x0c\x0e-\x1f\x7f]|\x21|[\x23-\x5b]|[\x5d-\x7e]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(\\([\x01-\x09\x0b\x0c\x0d-\x7f]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]))))*(((\x20|\x09)*(\x0d\x0a))?(\x20|\x09)+)?(\x22)))@((([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))\.)+(([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))\.?$/i);
+
+	return pattern2.test(emailAddress);
+
+}
+		
+function promptSearch()
+{
+	var searchKey = $("#wt_searchbox").val();
+	
+			var searchCall = "";
+			
+			if(kbGentype == "preview")
+			{
+				searchCall = "preview/";
+			}
+	
+	
+			var searchapi = 'https://app.wowto.ai/call/api/'+searchCall+'kb/'+kbID+'/search?q='+searchKey+"&callback=?";
+		
+			
+			if(kbFullurl.includes("localhost"))
+			searchapi = 'http://localhost:3000/call/api/'+searchCall+'kb/'+kbID+'/search?q='+searchKey+"&callback=?";
+			 
+					
+			$.ajax({ 
+		    type: 'GET', 
+		    url: searchapi, 
+		    dataType: 'json',
+		    success: function (videores) { 
+					
+					
+					try
+				    {
+					
+						
+						for(var j=0;j<videores.length;j++)
+						{
+							
+							var vid = videores[j];
+							
+
+							
+							if(vid.published == "imported")
+							vid.thumbnailurl  = getAssetURL()+"app/company/"+vid.clientid+"/video/"+vid.id+"/thumb/"+vid.id; 							
+							else
+							vid.thumbnailurl  = getAssetURL()+"app/company/"+vid.clientid+"/video/"+vid.id+"/step/"+vid.thumbnail+"/thumb/"+vid.thumbnail; 
+
+							if(kbPid == "")
+							vid.pageurl = kbFullurl +"/video/"+vid.id; 
+							else
+							vid.pageurl = kbFullurl + "/"+kbPid+"/video/"+vid.id; 
+
+						}
+						
+						
+						 var templateCode = $("#wtVideoPromptSearchListTemplate").html();
+						 
+						
+						 document.querySelector("#wt_promptbox_search").innerHTML = ejs.render( templateCode, {videos: videores});  
+					
+						if(videores.length == 0 )
+						{
+							
+							 document.querySelector("#wt_promptbox_search").innerHTML = "<div style='padding-top: 20px; padding-bottom: 20px; color: #888; font-size: 14px; text-align:center; margin: 0 auto;'>No videos found</div>";
+						}
+						
+				    	
+					 $(".wt_promptbox_listingcls").hide();
+		 			$("#wt_promptbox_search").show();
+				    	
+				    } 
+				    catch(e) 
+				    {
+				    	console.log(e);
+				    }
+		        
+		    }
+			,
+			 error: function (e) { 
+			
+				console.log(e);
+		    }
+		});
+						
+	
+}
+
+function selectStepHandler(e)
+{
+	var sid = $(this).attr("data-id");
+	
+	try
+	{
+		if(document.getElementById('wt_videoframe') && document.getElementById('wt_videoframe').contentWindow)
+			{
+				var obj = new Object();
+				obj.cmd = "playstep";
+				obj.stepid = sid;
+				document.getElementById('wt_videoframe').contentWindow.postMessage(JSON.stringify(obj), '*');
+			}
+	}
+	catch(e)
+	{
+		
+	}
+}
+
+$( document ).ready(function() {
+	
+	//quicklink.prefetch('contact/index.html');
+
+
+	$("#wt_sendmsgbtn").on('click', function(){
+		
+		$(".wt_contactfield").removeClass("wt_errorfield");
+		
+		var sname = $("#wt_supportname").val();
+		sname = sname.trim();
+		
+		var submitform = true;
+		
+		if(sname.trim() == '')
+		{
+			 $("#wt_supportname").addClass("wt_errorfield");
+			submitform = false;
+		}
+		
+		var semail = $("#wt_supportemail").val();
+		semail = semail.trim();
+		
+		if(semail.trim() == '')
+		{
+			$("#wt_supportemail").addClass("wt_errorfield");
+			submitform = false;
+		}
+		
+		if(!isValidEmailAddress(semail))
+		{
+			$("#wt_supportemail").addClass("wt_errorfield");
+			submitform = false;
+		}
+		
+		var ssubject = $("#wt_supportsubject").val();
+		
+		if(ssubject.trim() == '')
+		{
+			$("#wt_supportsubject").addClass("wt_errorfield");
+			submitform = false;
+		}
+		
+		var smessage = $("#wt_supporthelp").val();
+		
+		if(smessage.trim() == '')
+		{
+			$("#wt_supporthelp").addClass("wt_errorfield");
+			submitform = false;
+		}
+		
+		if(submitform)
+		{
+		var obj = new Object();
+		obj.sname = sname;
+		obj.semail = semail;
+		obj.ssubject = ssubject;
+		obj.smessage = smessage;
+		obj.kbid = kbID;
+		
+		var sendmsgurl = "";
+		
+		if(kbGentype == "preview")
+			{
+				
+				sendmsgurl = 'https://app.wowto.ai/call/api/preview/kb/contact';
+			
+				
+				if(kbFullurl.includes("localhost"))
+				sendmsgurl = 'http://localhost:3000/call/api/preview/kb/contact';
+				
+			}
+			else
+			{
+				
+				sendmsgurl = 'https://app.wowto.ai/call/api/kb/contact';
+			
+				
+				if(kbFullurl.includes("localhost"))
+				sendmsgurl = 'http://localhost:3000/call/api/kb/contact';
+			}	
+		
+		$(".wt_support_formWrapperMain").hide();
+		$(".wt_support_formMessagewrapper").hide();
+		$("#wt_supportform_loader").show();
+		
+		$.post(sendmsgurl, obj, 
+		    function(returnedData){
+		         
+		$(".wt_support_formWrapperMain").hide();
+		$(".wt_support_formMessagewrapper").show();
+		$("#wt_supportform_loader").hide();
+			
+			
+		}, 'json').fail(function(e){
+		      
+		
+		$(".wt_support_formWrapperMain").show();
+		$(".wt_support_formMessagewrapper").hide();
+		$("#wt_supportform_loader").hide();
+		
+				alert("Error! Unable to send message");
+		});
+		
+		}
+		
+		return false;
+		
+	});
+  
+	if($("#wt_videoframe").length)
+	{
+		$("#wt_scriptsearch").on('input', function(){
+		
+			if($("#wt_scriptsearch").val().trim() == "")
+			{
+				$(".wt_steps_list_item").show();
+			}
+			else
+			{
+				$(".wt_steps_list_item").hide();
+				
+				var searchTerm = $("#wt_scriptsearch").val().trim().toLowerCase();
+				
+				for(var i = 0; i < wt_videosteparr.length; i++)
+				{
+					var stepitem = wt_videosteparr[i];
+					
+					if(stepitem.text.trim().toLowerCase().includes(searchTerm))
+					{
+						$("#wtstepitem_"+stepitem.id).show();
+					}
+					
+				}
+			}
+		});
+	
+	
+		window.onmessage = function(e) {
+		
+			try
+			{
+				var obj = JSON.parse(e.data);
+				
+				if(obj.cmd == "recordvisit")
+				{
+					if(analyticsMgr)
+					analyticsMgr.logVisit();
+				}
+				
+				if(obj.cmd == "steplisting")
+				{
+						wt_videosteparr = obj.steps;
+						
+						 var templateCode = $("#wtStepListTemplate").html();
+						 
+						
+						 document.querySelector("#wt_videosteplisting").innerHTML = ejs.render( templateCode, {steps: obj.steps});  
+						
+						 $(".wt_steps_list_item").off('click',selectStepHandler);	
+						$(".wt_steps_list_item").on('click',selectStepHandler);	
+      
+				    	 
+				}
+				
+				if(obj.cmd == "currentstep")
+				{
+						wt_currentstepid = obj.stepid;
+						
+						
+      					$(".wt_steps_list_item").removeClass("wt_steps_list_item_Selected");
+						$("#wtstepitem_"+obj.stepid).addClass("wt_steps_list_item_Selected");
+				    	 
+				}
+			}
+			catch(e)
+			{
+				
+			}
+		};	
+	}
+
+	try
+	{
+		$("#wt_collapetogglebtn").click(function(){
+		
+		 	var curr = $(this).attr("data-cat");
+		
+			if(curr == "collapse")
+			{
+				$("#wt_collapetogglebtnicon").removeClass();
+				$("#wt_collapetogglebtnicon").addClass("bi");
+				$("#wt_collapetogglebtnicon").addClass("bi-chevron-bar-contract");
+				$(this).attr("data-cat","expand");
+				$(".wt_video_grid_top").removeClass("collapsed");
+				$(".wt_video_thumb").addClass("show");
+			}
+			else
+			{
+				$("#wt_collapetogglebtnicon").removeClass();
+				$("#wt_collapetogglebtnicon").addClass("bi");
+				$("#wt_collapetogglebtnicon").addClass("bi-chevron-bar-expand");
+				$(this).attr("data-cat","collapse");
+				$(".wt_video_grid_top").removeClass("collapsed");
+				$(".wt_video_grid_top").addClass("collapsed");
+				$(".wt_video_thumb").removeClass("show");
+				
+			}
+			
+		});
+		
+	}
+	catch(e)
+	{
+		
+	}
+	
+	$("#wt_searchform").submit(function(){
+	  
+		 var x;
+	    x = document.getElementById("wt_searchbox").value;
+	    if (x.trim() == "") {
+	       
+	        return false;
+	    };
+	});
+		
+
+
+	window.addEventListener('resize', function(event) {
+		    
+		    $("#wt_promptbox").hide();
+		    
+		}, true);
+		
+	$("#wt_searchbox").on('input', function(){
+		
+		if($("#wt_searchbox").val().trim() == "")
+		{
+			$("#wt_promptbox").hide();
+		}
+		else
+		{
+			 $(".wt_promptbox_listingcls").hide();
+			 $("#wt_promptbox_loader").show();
+		
+				$("#wt_promptbox").show();
+	
+			  var position = $("#wt_searchbox").offset();
+			  $("#wt_promptbox").css('left',position.left);
+			  $("#wt_promptbox").css('top',position.top+$("#wt_searchbox").outerHeight()+5);
+	
+			 $("#wt_promptbox").css('width',$("#wt_searchbox").outerWidth());
+			
+				promptSearch();
+		}
+	});
+	
+	$(document).mouseup(function(e) 
+	{
+    	var container = $("#wt_promptbox");
+
+    // if the target of the click isn't the container nor a descendant of the container
+	    if (!container.is(e.target) && container.has(e.target).length === 0) 
+	    {
+	        container.hide();
+	    }
+	});
+	
+	$("#wt_searchbox").focusin(function(){
+		
+		 
+			
+	});
+	
+	$("#wt_promptbox").mousedown(function(e){
+		
+		 e.stopImmediatePropagation();
+			
+	});
+	
+	$("#wt_promptbox").focusout(function(e){
+		
+		 
+
+			
+	});
+
+	if(kbSearch == "true")
+	{
+		
+	
+		try
+		{
+		  	const queryString = window.location.search;
+		  	
+		  	const urlParams = new URLSearchParams(queryString);
+		  	
+		  	kbSearchQuery = urlParams.get('q');	
+		}
+		catch(e)
+		{
+			
+			
+		}
+		
+		
+		
+		if(kbSearchQuery && kbSearchQuery.trim() == "")
+		{
+			
+		}
+		else
+		{
+			try
+			{
+				$(".wt_input_search").val(kbSearchQuery);
+				$(".wt_search_val").val(kbSearchQuery);
+			}
+			catch(e)
+			{
+			}
+			
+			
+			var searchapi = null;
+			
+			if(kbGentype == "preview")
+			{
+				
+				searchapi = 'https://app.wowto.ai/call/api/preview/kb/'+kbID+'/search?q='+kbSearchQuery+"&callback=?";
+			
+				
+				if(kbFullurl.includes("localhost"))
+				searchapi = 'http://localhost:3000/call/api/preview/kb/'+kbID+'/search?q='+kbSearchQuery+"&callback=?";
+				
+			}
+			else
+			{
+				
+				searchapi = 'https://app.wowto.ai/call/api/kb/'+kbID+'/search?q='+kbSearchQuery+"&callback=?";
+			
+				
+				if(kbFullurl.includes("localhost"))
+				searchapi = 'http://localhost:3000/call/api/kb/'+kbID+'/search?q='+kbSearchQuery+"&callback=?";
+			}	 
+		
+						
+			$.ajax({ 
+		    type: 'GET', 
+		    url: searchapi, 
+		    dataType: 'json',
+		    success: function (videores) { 
+					
+					
+					try
+				    {
+					
+						
+						for(var j=0;j<videores.length;j++)
+						{
+							
+							var vid = videores[j];
+							
+							if(vid.published == "imported")
+							vid.thumbnailurl  = getAssetURL()+"app/company/"+vid.clientid+"/video/"+vid.id+"/thumb/"+vid.id; 							
+							else
+							vid.thumbnailurl  = getAssetURL()+"app/company/"+vid.clientid+"/video/"+vid.id+"/step/"+vid.thumbnail+"/thumb/"+vid.thumbnail; 
+
+							if(kbPid == "")
+							vid.pageurl = kbFullurl + "/video/"+vid.id; 
+							else
+							vid.pageurl = kbFullurl + "/"+kbPid+"/video/"+vid.id; 
+
+						}
+						
+						
+						 var templateCode = $("#wtVideoListTemplate").html();
+						 
+						
+						 document.querySelector("#wt_videlisting").innerHTML = ejs.render( templateCode, {videos: videores});  
+						
+				    	
+					 
+				    	
+				    } 
+				    catch(e) 
+				    {
+				    	console.log(e);
+				    }
+		        
+		    }
+			,
+			 error: function (e) { 
+			
+				console.log(e);
+		    }
+		});
+						
+			
+		}
+	}
+	
+
+	
+	
+
+  	
+	  	
+  
+});
+
+function getAssetURL()
+{
+	if(kbFullurl.includes("localhost"))
+	return "https://s3.amazonaws.com/testwowassets/";
+	else
+	return "https://assets.wowto.ai/";
+	
+};
+
+

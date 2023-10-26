@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fontes em CSS</title>
+    <style>
+        /*p{
+           font-family: sans-serif;
+        }
+        h1{
+            font-family: serif;
+        }
+        h2{
+            font-family: monospace;
+        }*/
+        body{
+            font-family: Arial, Helvetica, sans-serif;
+            /*
+            Medidas Absolutas
+            cm, mm, in, *px*, pt, pc
+            
+            Medidas Relativas
+            *em*: M, ex, rem, vw, vh, %
+
+            Recomendação da W3C: usar px e em.
+            16px geralmente = 1em, que é o tamanho padrão
+            Então, 2em = 32px
+            */
+            font-size: 1em;
+            /*font-weight: bolder;*/
+            /*font-style: italic; normal, italic*/ 
+            /*text-decoration: underline;*/
+            /*normal, lighter, bold, bolder*/
+        }
+        h1{
+            font: italic bolder 3em 'sans';
+            /*font-family: sans-serif;
+            font-weight: bolder;
+            font-size: 1em;
+            font-style: italic;*/
+            /* shorthand font, na ordem:
+            font-style >> font-weight >> font-size; font-family
+            */
+        }
+        h2{
+            font: bold 2em 'sans';
+        }
+    </style>
+</head>
+<body>
+    <h1>Trabalhando com fontes</h1>
+    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Accusamus quasi vitae, nesciunt officia voluptatibus, est nihil maxime labore alias accusantium rerum aut nam reiciendis numquam quisquam fugit ab laboriosam at?</p>
+    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Quaerat, sunt delectus cupiditate earum aperiam saepe perferendis a reprehenderit voluptate voluptatem odit nemo enim dolorem veniam iure suscipit non repudiandae harum.</p>
+    <h2>Subtítulo do exercício</h2>
+    <p>Lorem, ipsum dolor sit amet consectetur adipisicing elit. Autem vel dolore aliquid quibusdam possimus quas corporis molestiae soluta tempora unde, nisi aut nihil. Minima explicabo, asperiores natus soluta perferendis iusto.</p>
+</body>
+</html>

@@ -1,0 +1,95 @@
+ /**
+ * Copyright - A Produle Systems Private Limited. All Rights Reserved.
+ * 
+ * @desc WowTo Analytics handler
+ */
+ 
+ 
+function WT_AnalyticsManager()
+{
+	var thisClass = this;
+	
+	this.visitRecorded = false;
+	
+	this.constructor = function() 
+	{
+		
+		//When opening from widget, do not record visit on load
+		if(!document.location.href.startsWith("https://kb.wowto.ai/widgets/"))
+		{
+			thisClass.logVisit();
+		}
+		else
+		{
+			var obj = new Object();
+				obj.id = "wt_analytics";
+				obj.cmd = "canrecordvisit";
+		
+			window.parent.postMessage(JSON.stringify(obj), '*');
+		}
+		
+	};
+	
+	this.logVisit = function()
+	{
+		if(thisClass.visitRecorded)
+		{
+			return false;			
+		}
+		
+		//Compute search term
+		var searchTerm = "";
+		try
+		{
+			const queryString = window.location.search;
+		  	
+		  	const urlParams = new URLSearchParams(queryString);
+		  	
+		  	searchTerm = urlParams.get('q');
+		}
+		catch(err)
+		{
+			console.log(err);
+		}
+		
+		//Obtain the ipaddress and send it along with the request
+    	fetch("https://api.ipify.org?format=json").then(res => res.json()).then(ipaddressRes => {
+			ipAddress = ipaddressRes.ip;
+
+			var requestObj = {
+				kbId : kbID,
+				path : window.location.pathname,
+				searchTerm: searchTerm,
+                screenResolution: screen.width+"x"+screen.height,
+                timezone: -(new Date().getTimezoneOffset() / 60),
+				ipAddress: ipAddress
+			}
+
+			//Call analytics ping
+            fetch('https://app.wowto.ai/call/api/analytics/ping', {
+                method: 'POST',
+                mode: 'cors',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(requestObj) // body data type must match "Content-Type" header
+            }).then(pingRes => {
+                //console.log(pingRes);
+            }).catch(pingErr => {
+                console.log(pingErr);
+            });
+
+            
+		}).catch(error => {
+			
+		});
+		
+		thisClass.visitRecorded = true;
+	};
+}
+
+var analyticsMgr = new WT_AnalyticsManager();
+
+$(document).ready(function(){
+	analyticsMgr.constructor();
+});

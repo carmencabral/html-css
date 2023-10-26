@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trabalhando com links</title>
+</head>
+<body>
+    <h1>Usando links externos</h1>
+    <!-- rel="external": Ver explicação abaixo -->
+    <p>Você pode acessar o meu <a target="_blank" rel="external" href="https://gustavoguanabara.github.io">repositório público no GitHub</a></p>
+    <p>Você também pode acessar o meu <a target="_blank" rel="external" href="https://www.youtube.com/cursoemvideo/">canal gratuito no YouTube</a></p>
+
+    <h1>Usando links internos</h1>
+    <p>Esta é a primeira página do site. Se você quiser, pode acessar também a minha <a target="_self" rel="next" href="pag002.html">Segunda página.</a>
+    </p>
+
+    <p>Você também pode acessar a nossa <a target="_self" href="noticias/pag003.html" rel="next">página de notícias.</a></p>
+
+    <h1>Links para download</h1>
+    <ul>
+        <li><a target="_blank" href="livro/livro10.pdf" download="livro10.pdf" type="application/pdf">Baixar o livro em PDF</a></li>
+        <li><a href="livro/livro10.7z" download="livro10.7z" type="application/zip">Livro compactado em ZIP</a></li>
+    </ul>
+
+</body>
+</html>
+
+<!-- 
+    VALORES aceitos pelo 
+    parâmetro rel da 
+    tag a
+
+    ‣NEXT indica que o link é para a próxima parte do documento atual.
+    ‣PREV indica que o link é para a parte anterior do documento atual.
+    ‣AUTHOR indica que é um link para o site do autor do artigo atual.
+    ‣EXTERNAL indica que é um link para outro site que não faz parte do     site atual.
+    ‣NOFOLLOW indica que é um link para um site não endossado, como um  link pago.
+
+ -->

@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grouping tags</title>
+    <style>
+        body{
+            font-family:Arial, Helvetica, sans-serif;
+            background-color: darkgray;
+            margin:0px;
+        }
+        header{
+            background-color: white;
+            padding: 10px;
+            margin: 10px;
+        }
+        nav{
+            background-color: rgb(102,102,102);
+            padding: 3px;
+            box-shadow: 5px 3px 7px 1px rgba(0, 0, 0, 0.483);
+        }
+        nav > a{
+            text-decoration: none;
+            color: white;
+            font-weight: bold;
+            margin-right: 30px;
+        }
+
+        nav > a:hover{
+            text-decoration: underline;
+            color: rgb(0, 225, 255);
+            
+        }
+        nav > a:active{
+            color: blue;
+        }
+
+        main{
+            background-color: white;
+            margin: 10px;
+            padding: 5px;
+            border-radius: 10px;
+        }
+        article{
+            background-color: lightgrey;
+            padding: 5px;
+            margin: 5px;
+        }
+        article > aside {
+            background-color: rgb(165,165,165);
+        }
+       
+        footer{
+            background-color: black;
+            color: white;
+            text-align: center;
+            padding: 4px;
+            margin: 0px;
+        }
+        footer > p{
+            margin: 0px;
+        }
+        /*#bola{
+            height: 100px;    
+            width: 100px;
+            margin: 10px;
+            background-color: white;
+            border-radius: 50%
+        
+        }*/
+
+
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Meu site</h1>
+        <nav>
+            <a href="http://www.youtube.com" target="_blank"><sub><img src="youtube.png" alt="youtube"></sub>Youtube</a>
+            <a href="http://www.google.com" target="_blank"><sub><img src="google.png" alt="google"></sub>Google</a>
+            <a href="#">Link</a>
+            <a href="#">Link</a>
+            <a href="#">Link</a>
+        </nav>
+    </header>
+    <main>
+        <section id="assuntos">
+            <p>Esportes Política Tecnologia</p>
+        </section>
+        <section id="noticias">
+            <article>
+                <h1>Notícias sobre o Brasil</h1>
+                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aliquid dolor recusandae, perspiciatis odit iste 
+                    fugiat autem qui voluptate deleniti ipsa porro reprehenderit nostrum necessitatibus ipsam doloribus at, 
+                    error molestias consequatur.</p>
+                <aside>
+                    <p>Artigo escrito por José da Silva</p>
+                </aside>
+            </article>
+        </section>
+    </main>
+    <footer>
+        <p>Desenvolvido por Carmen Cabral</p>
+    </footer>
+    <div id="bola"></div>
+</body>
+</html>
