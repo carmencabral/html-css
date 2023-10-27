@@ -3,6 +3,5 @@
 
 Estou aprendendo a criar sites e agora vou gerenciar repositórios.
 
-https://carmencabral.github.io/html-css/exercicios
-
-https://carmencabral.github.io/html-css/desafios
+<a href="https://carmencabral.github.io/html-css/exercicios" target="_blank">Exercícios</a>
+<a href="https://carmencabral.github.io/html-css/desafios" target="_blank">Desafios</a>
