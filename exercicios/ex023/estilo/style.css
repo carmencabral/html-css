@@ -1,0 +1,22 @@
+body{
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: small;
+}
+table{
+    border-collapse: collapse;
+    width: auto;
+}
+
+td, th{
+    border: 1px solid gray;
+    padding: 5px;
+    text-align: center;
+}
+
+tr:nth-child(2n-1){
+    background-color: lightgray;
+}
+
+th{
+    background-color: rgb(171, 170, 170);
+}

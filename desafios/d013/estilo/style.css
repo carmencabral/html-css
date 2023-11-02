@@ -1,0 +1,18 @@
+body{
+    font-family: Arial, Helvetica, sans-serif;
+}
+table{
+    border-collapse: collapse;
+    width: 350px;
+}
+
+td{
+    border: 1px solid gray;
+    padding: 5px;
+    text-align: center;
+}
+
+.celula{
+    background-color: black;
+    color: white;
+}
